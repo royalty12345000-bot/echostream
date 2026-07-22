@@ -52,8 +52,14 @@ body {
     justify-content: space-between;
     gap: 18px;
     flex-wrap: wrap;
-    padding-bottom: 20px;
+    padding: 16px 0;
+    background-color: rgba(10, 10, 18, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .logo {
@@ -176,6 +182,7 @@ body {
 /* ---------- Tracks ---------- */
 .tracks-panel {
     flex: 1;
+    padding-top: 10px;
 }
 
 .track-list {
