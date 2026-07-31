@@ -1,75 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover"
+    />
     <title>Royalstream</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="royalst.png">
-</head>
-<body>
-<div class="app">
-    <div class="header">
-        <div class="logo">
-            <img src="royalstream.png" class="logo-img" alt="RoyalStream logo" onerror="this.style.display='none'">
-            <div class="logo-text">
-                <h1>RoyalStream</h1>
-                <p>Full tracks · RoyalStream · your personal library</p>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="royalst.png" />
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; media-src https:; connect-src https://api.jamendo.com https://discoveryprovider.audius.co https://lrclib.net https://*.firebaseio.com https://*.googleapis.com; frame-src 'none';"> -->
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <!-- Pull-to-refresh indicator -->
+      <div class="pull-to-refresh" id="pullToRefresh">
+        <span class="refresh-icon"><i class="fas fa-sync-alt"></i></span>
+        <span>Pull down to refresh</span>
+      </div>
+
+      <main id="mainContent" class="main-content">
+        <!-- HOME SCREEN -->
+        <section id="homeScreen" class="screen active">
+          <div class="welcome-banner">
+            <div class="banner-content">
+              <h1 class="banner-title">Welcome to RoyalStream</h1>
+              <p class="banner-subtitle">
+                Listen like royalty. Unlimited independent music.
+              </p>
+              <div class="banner-decoration">
+                <i class="fas fa-crown"></i>
+              </div>
             </div>
-        </div>
-        <div class="search-row">
+          </div>
+          <div class="home-section">
+            <div class="section-label">Popular Artists</div>
+            <div
+              id="popularArtistsContainer"
+              class="horizontal-scroll artist-row"
+            ></div>
+          </div>
+          <div class="home-section">
+            <div class="section-label">Trending Songs</div>
+            <div id="trendingContainer" class="track-list"></div>
+          </div>
+        </section>
+
+        <!-- SEARCH SCREEN -->
+        <section id="searchScreen" class="screen">
+          <div class="screen-header">
+            <h2 class="screen-title">Search</h2>
+          </div>
+          <div class="search-container">
             <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search for songs, artists, tags...">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Artists, songs, or albums..."
+              />
             </div>
-            <button id="searchBtn" class="search-btn"><i class="fas fa-arrow-right"></i> Go</button>
-        </div>
-    </div>
+            <button id="searchBtn" class="search-btn">Search</button>
+          </div>
+          <div id="searchResultsContainer" class="track-list"></div>
+        </section>
 
-    <div class="tracks-panel">
-        <div class="section-badge"><i class="fas fa-compact-disc"></i> 500+ SUGGESTIONS · FULL TRACKS</div>
-        <div id="trackListContainer" class="track-list">
-            <div class="loading-message"><i class="fas fa-spinner fa-pulse"></i> Loading your library from Royalstream...</div>
-        </div>
-    </div>
+        <!-- LIBRARY SCREEN -->
+        <section id="libraryScreen" class="screen">
+          <div class="screen-header">
+            <h2 class="screen-title">Your Library</h2>
+          </div>
+          <div class="library-tabs">
+            <button class="lib-tab active" data-tab="playlists">
+              Playlists
+            </button>
+            <button class="lib-tab" data-tab="liked">Liked Songs</button>
+            <button class="lib-tab" data-tab="downloads">Downloads</button>
+          </div>
+          <div id="libraryContent" class="library-content"></div>
+        </section>
 
-    <footer>🎵 Powered by Royalstream · full‑length tracks from independent artists</footer>
-</div>
+        <!-- NOW PLAYING SCREEN (full player) -->
+        <section id="nowPlayingScreen" class="screen">
+          <div class="player-full">
+            <button class="player-back-btn" id="playerBackBtn">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="player-artwork-large" id="playerArtworkLarge">
+              <i class="fas fa-music"></i>
+            </div>
+            <div class="player-info">
+              <h2 class="player-title" id="playerTitle">—</h2>
+              <p class="player-artist" id="playerArtist">—</p>
+              <p class="player-album" id="playerAlbum"></p>
+              <p class="player-release" id="playerRelease"></p>
+            </div>
+            <div class="player-progress-container">
+              <span class="player-time" id="playerCurrentTime">0:00</span>
+              <div class="player-progress-bg" id="playerProgressBg">
+                <div class="player-progress-fill" id="playerProgressFill"></div>
+              </div>
+              <span class="player-time" id="playerDuration">0:00</span>
+            </div>
+            <div class="player-controls">
+              <button id="shuffleBtn"><i class="fas fa-random"></i></button>
+              <button id="playerPrevBtn">
+                <i class="fas fa-backward-step"></i>
+              </button>
+              <button id="playerPlayPauseBtn" class="player-play-btn">
+                <i class="fas fa-play"></i>
+              </button>
+              <button id="playerNextBtn">
+                <i class="fas fa-forward-step"></i>
+              </button>
+              <button id="repeatBtn"><i class="fas fa-redo"></i></button>
+            </div>
+            <div class="player-actions">
+              <button id="playerLikeBtn"><i class="far fa-heart"></i></button>
+              <button id="playerDownloadBtn">
+                <i class="fas fa-download"></i>
+              </button>
+              <button id="playerAddToPlaylistBtn">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button id="queueBtn" title="Queue">
+                <i class="fas fa-list"></i>
+              </button>
+              <button id="autoplayToggleBtn" title="Autoplay">
+                <i class="fas fa-infinity"></i>
+              </button>
+              <button id="lyricsBtn" title="Lyrics">
+                <i class="fas fa-microphone-alt"></i>
+              </button>
+            </div>
+            <!-- Sleep timer display -->
+            <div
+              class="sleep-timer"
+              id="sleepTimerContainer"
+              style="display: none"
+            >
+              <i class="fas fa-clock"></i>
+              <span id="sleepTimerDisplay">0:00</span>
+            </div>
+          </div>
+          <!-- Queue panel -->
+          <div class="queue-panel" id="queuePanel" style="display: none">
+            <div class="queue-header">
+              <h3>Queue</h3>
+              <button id="closeQueueBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="queueListContainer" class="track-list"></div>
+          </div>
+          <!-- Lyrics overlay -->
+          <div class="lyrics-overlay" id="lyricsOverlay" style="display: none">
+            <div class="lyrics-header">
+              <h3>Lyrics</h3>
+              <button id="closeLyricsBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="lyrics-content" id="lyricsContent">
+              <div class="empty-placeholder">Loading lyrics...</div>
+            </div>
+          </div>
+        </section>
+      </main>
 
-<div class="now-playing-bar" id="nowPlayingBar">
-    <div class="bar-left">
-        <div class="bar-art" id="albumArtContainer">
+      <!-- NOW PLAYING BAR (persistent) -->
+      <div class="now-playing-bar" id="nowPlayingBar">
+        <div class="bar-left" id="barLeft">
+          <div class="bar-art" id="albumArtContainer">
             <i class="fas fa-music"></i>
-        </div>
-        <div class="bar-meta">
+          </div>
+          <div class="bar-meta">
             <div class="bar-title" id="currentTitle">—</div>
-            <div class="bar-artist" id="currentArtist">Select a track to play</div>
+            <div class="bar-artist" id="currentArtist">Select a track</div>
+          </div>
         </div>
-    </div>
-
-    <div class="bar-center">
-        <div class="bar-controls">
-            <button id="prevButton" title="Previous"><i class="fas fa-backward-step"></i></button>
-            <button id="playPauseButton" class="bar-play-btn" title="Play / Pause"><i class="fas fa-play"></i></button>
-            <button id="nextButton" title="Next"><i class="fas fa-forward-step"></i></button>
-        </div>
-        <div class="bar-progress-wrap">
+        <div class="bar-center">
+          <div class="bar-controls">
+            <button id="shuffleMiniBtn" title="Shuffle">
+              <i class="fas fa-random"></i>
+            </button>
+            <button id="prevButton" title="Previous">
+              <i class="fas fa-backward-step"></i>
+            </button>
+            <button
+              id="playPauseButton"
+              class="bar-play-btn"
+              title="Play / Pause"
+            >
+              <i class="fas fa-play"></i>
+            </button>
+            <button id="nextButton" title="Next">
+              <i class="fas fa-forward-step"></i>
+            </button>
+            <button id="repeatMiniBtn" title="Repeat">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
+          <div class="bar-progress-wrap">
             <span id="currentTimeLabel" class="bar-time">0:00</span>
             <div class="progress-bg" id="progressBg">
-                <div class="progress-fill" id="progressFill"></div>
+              <div class="progress-fill" id="progressFill"></div>
             </div>
             <span id="durationLabel" class="bar-time">0:00</span>
+          </div>
         </div>
+        <div class="bar-right">
+          <i class="fas fa-volume-low bar-vol-icon"></i>
+          <input
+            type="range"
+            id="volumeControl"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.7"
+          />
+          <i class="fas fa-volume-high bar-vol-icon"></i>
+        </div>
+      </div>
+
+      <!-- BOTTOM NAVIGATION -->
+      <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-screen="homeScreen">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+        <button class="nav-item" data-screen="searchScreen">
+          <i class="fas fa-search"></i>
+          <span>Search</span>
+        </button>
+        <button class="nav-item" data-screen="libraryScreen">
+          <i class="fas fa-music"></i>
+          <span>Library</span>
+        </button>
+      </nav>
     </div>
 
-    <div class="bar-right">
-        <i class="fas fa-volume-low bar-vol-icon"></i>
-        <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.7">
-        <i class="fas fa-volume-high bar-vol-icon"></i>
-    </div>
-</div>
-
-<script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>
