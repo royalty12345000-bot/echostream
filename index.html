@@ -7,13 +7,21 @@
       content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover"
     />
     <title>Royalstream</title>
+
+    <!-- PWA Requirements -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#7c5cff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RoyalStream" />
+    <link rel="apple-touch-icon" href="royalst.png" />
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="royalst.png" />
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; media-src https:; connect-src https://api.jamendo.com https://discoveryprovider.audius.co https://lrclib.net https://*.firebaseio.com https://*.googleapis.com; frame-src 'none';"> -->
   </head>
   <body>
     <div id="app" class="app-container">
@@ -241,5 +249,15 @@
     </div>
 
     <script src="app.js"></script>
+   <!-- Register Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Service Worker registered successfully.'))
+            .catch(err => console.log('Service Worker registration failed:', err));
+        });
+      }
+    </script>
   </body>
 </html>
